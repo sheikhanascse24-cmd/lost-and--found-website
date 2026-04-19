@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - Lost & Found</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/messages.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <h1>🔍 Lost & Found</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="browse.html">Browse Items</a></li>
+                <li id="nav-auth">
+                    <a href="dashboard.html">Dashboard</a> | <a href="#" onclick="logout()">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="messages-section">
+        <div class="container">
+            <h1>💬 Messages</h1>
+
+            <div class="messages-container">
+                <!-- Conversations List -->
+                <div class="conversations-panel">
+                    <h3>Conversations</h3>
+                    <div id="conversations-list" class="conversations-list">
+                        <p>Loading conversations...</p>
+                    </div>
+                </div>
+
+                <!-- Chat Panel -->
+                <div class="chat-panel">
+                    <div id="chat-header" class="chat-header">
+                        <h3>Select a conversation</h3>
+                    </div>
+
+                    <div id="messages-chat" class="messages-chat">
+                        <p class="empty-chat">Select a conversation to start messaging</p>
+                    </div>
+
+                    <div id="message-input-area" class="message-input-area" style="display: none;">
+                        <input type="text" id="message-text" placeholder="Type your message..." class="message-input">
+                        <button onclick="sendMessage()" class="btn btn-primary">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Lost & Found. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/auth.js"></script>
+    <script src="js/messages.js"></script>
+</body>
+</html>

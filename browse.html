@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Items - Lost & Found</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <h1>🔍 Lost & Found</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="browse.html" class="active">Browse Items</a></li>
+                <li id="nav-auth">
+                    <a href="login.html">Login</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="browse-section">
+        <div class="container">
+            <h1>Browse Lost & Found Items</h1>
+
+            <div class="filters">
+                <form id="filter-form">
+                    <div class="filter-group">
+                        <label>Type:</label>
+                        <select id="filter-type">
+                            <option value="">All Types</option>
+                            <option value="lost">Lost Items</option>
+                            <option value="found">Found Items</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Category:</label>
+                        <select id="filter-category">
+                            <option value="">All Categories</option>
+                            <option value="electronics">Electronics</option>
+                            <option value="documents">Documents</option>
+                            <option value="jewelry">Jewelry</option>
+                            <option value="keys">Keys</option>
+                            <option value="wallet">Wallet/Money</option>
+                            <option value="phone">Phone</option>
+                            <option value="bag">Bag/Luggage</option>
+                            <option value="clothing">Clothing</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Search:</label>
+                        <input type="text" id="search-input" placeholder="Search by title or description...">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Search</button>
+                    <button type="reset" class="btn btn-secondary">Reset</button>
+                </form>
+            </div>
+
+            <div id="items-container" class="items-grid">
+                <p>Loading items...</p>
+            </div>
+
+            <div id="pagination-container" class="pagination"></div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Lost & Found. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/auth.js"></script>
+    <script src="js/browse.js"></script>
+</body>
+</html>

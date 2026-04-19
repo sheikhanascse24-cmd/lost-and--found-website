@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Item - Lost & Found</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <h1>🔍 Lost & Found</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="browse.html">Browse Items</a></li>
+                <li id="nav-auth">
+                    <a href="dashboard.html">Dashboard</a> | <a href="#" onclick="logout()">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="post-item-section">
+        <div class="container">
+            <h1>Post a Lost or Found Item</h1>
+
+            <div class="post-item-container">
+                <form id="post-item-form" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="item_type">Is it Lost or Found?</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="type" value="lost" required> Lost Item
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="type" value="found" required> Found Item
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="title">Item Title:</label>
+                        <input type="text" id="title" name="title" placeholder="e.g., Black Wallet with Cash" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Description:</label>
+                        <textarea id="description" name="description" rows="5" placeholder="Describe the item in detail..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Category:</label>
+                        <select id="category" name="category" required>
+                            <option value="">Select a category</option>
+                            <option value="electronics">Electronics</option>
+                            <option value="documents">Documents</option>
+                            <option value="jewelry">Jewelry</option>
+                            <option value="keys">Keys</option>
+                            <option value="wallet">Wallet/Money</option>
+                            <option value="phone">Phone</option>
+                            <option value="bag">Bag/Luggage</option>
+                            <option value="clothing">Clothing</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location">Location:</label>
+                        <input type="text" id="location" name="location" placeholder="Where was it lost/found?" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date_occurred">Date:</label>
+                        <input type="date" id="date_occurred" name="date_occurred" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="image">Photo (Optional):</label>
+                        <input type="file" id="image" name="image" accept="image/*">
+                        <p class="hint">Max file size: 5MB. Allowed formats: JPG, PNG, GIF</p>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-full">Post Item</button>
+                </form>
+
+                <div id="post-message" class="message"></div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Lost & Found. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/auth.js"></script>
+    <script src="js/post-item.js"></script>
+</body>
+</html>

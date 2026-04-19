@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Items - Lost & Found</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/feed.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <h1>🔍 Lost & Found</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="feed.html" class="active">Find Items</a></li>
+                <li id="nav-auth">
+                    <a href="login.html">Login</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="feed-section">
+        <div class="feed-container">
+            <!-- Sidebar with Filters -->
+            <aside class="feed-sidebar">
+                <div class="filter-widget">
+                    <h3>Filters</h3>
+                    <form id="filter-form" class="sidebar-filters">
+                        <div class="filter-group">
+                            <label>
+                                <input type="radio" name="filter_type" value="" checked> All Items
+                            </label>
+                            <label>
+                                <input type="radio" name="filter_type" value="lost"> Lost Items
+                            </label>
+                            <label>
+                                <input type="radio" name="filter_type" value="found"> Found Items
+                            </label>
+                        </div>
+
+                        <h4>Category</h4>
+                        <select id="filter-category" class="filter-select">
+                            <option value="">All Categories</option>
+                            <option value="electronics">Electronics</option>
+                            <option value="documents">Documents</option>
+                            <option value="jewelry">Jewelry</option>
+                            <option value="keys">Keys</option>
+                            <option value="wallet">Wallet/Money</option>
+                            <option value="phone">Phone</option>
+                            <option value="bag">Bag/Luggage</option>
+                            <option value="clothing">Clothing</option>
+                            <option value="other">Other</option>
+                        </select>
+
+                        <h4>Search</h4>
+                        <input type="text" id="search-input" class="filter-search" placeholder="Search items...">
+
+                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Search</button>
+                        <button type="reset" class="btn btn-secondary" style="width: 100%; margin-top: 5px;">Reset</button>
+                    </form>
+                </div>
+            </aside>
+
+            <!-- Main Feed -->
+            <main class="feed-main">
+                <div class="feed-header">
+                    <h2>Find Items</h2>
+                </div>
+
+                <div id="feed-container" class="feed-items">
+                    <p class="loading">Loading items...</p>
+                </div>
+
+                <div id="pagination-container" class="pagination"></div>
+            </main>
+
+            <!-- Right Sidebar with Info -->
+            <aside class="feed-sidebar-right">
+                <div class="info-widget">
+                    <h3>👋 Welcome!</h3>
+                    <p>Browse lost and found items posted by the community.</p>
+                    <p id="auth-status"></p>
+                </div>
+            </aside>
+        </div>
+    </section>
+
+    <!-- Modal for Claiming Items -->
+    <div id="claim-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Claim or Comment on Item</h2>
+            <form id="claim-form">
+                <div class="form-group">
+                    <label for="claim-text">Message:</label>
+                    <textarea id="claim-text" rows="4" placeholder="Let them know you have found the item or help identify it..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="is-claim"> Mark as claim (I have this item)
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary">Post</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Lost & Found. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/auth.js"></script>
+    <script src="js/feed.js"></script>
+</body>
+</html>

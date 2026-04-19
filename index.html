@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lost & Found - Find Or Report Lost Items</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <h1>🔍 Lost & Found</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="feed.html">Find Items</a></li>
+                <li id="nav-auth">
+                    <a href="login.html">Login</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h2>Find Your Lost Items Or Report Found Items</h2>
+            <p>Help reunite people with their lost belongings</p>
+            <div class="hero-buttons">
+                <a href="feed.html" class="btn btn-primary">Find Items</a>
+                <a href="post-item.html" class="btn btn-secondary" id="post-btn">Post Item</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="container">
+            <h2>How It Works</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📝</div>
+                    <h3>Post Items</h3>
+                    <p>Report lost or found items with photos and details</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔎</div>
+                    <h3>Search</h3>
+                    <p>Browse and search through listed items by category or location</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h3>Connect</h3>
+                    <p>Message item owners to verify and arrange handover</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">✅</div>
+                    <h3>Resolve</h3>
+                    <p>Mark items as resolved when they're found or claimed</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="recent-items">
+        <div class="container">
+            <h2>Recently Posted Items</h2>
+            <div id="recent-items-container" class="items-grid">
+                <p>Loading items...</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Lost & Found. All rights reserved.</p>
+            <p>Helping people find what they've lost and report what they've found.</p>
+        </div>
+    </footer>
+
+    <script src="js/auth.js"></script>
+    <script src="js/home.js"></script>
+</body>
+</html>
