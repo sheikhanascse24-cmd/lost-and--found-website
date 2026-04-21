@@ -73,10 +73,13 @@ async function loadConversations() {
 async function openConversation(userId, userName) {
     currentConversationWith = userId;
     
-    // Update header
+    // Update header with user name and clear chat button
     document.getElementById('chat-header').innerHTML = `
-        <img src="https://via.placeholder.com/40x40?text=${userName[0]}" alt="${userName}" class="chat-avatar" style="cursor: pointer;" onclick="viewUserProfile(${userId})">
-        <h3 style="cursor: pointer; display: inline-block; margin-left: 10px;" onclick="viewUserProfile(${userId})">${userName}</h3>
+        <div style="flex: 1; display: flex; align-items: center;">
+            <img src="https://via.placeholder.com/40x40?text=${userName[0]}" alt="${userName}" class="chat-avatar" style="cursor: pointer; margin-right: 10px;" onclick="viewUserProfile(${userId})">
+            <h3 style="cursor: pointer; display: inline-block;" onclick="viewUserProfile(${userId})">${userName}</h3>
+        </div>
+        <button onclick="clearChat()" class="btn btn-danger" style="background-color: #FF6B6B; padding: 0.5rem 1rem; font-size: 0.9rem;">🗑️ Clear Chat</button>
     `;
     
     // Show message input
@@ -98,9 +101,17 @@ async function openConversation(userId, userName) {
             const senderName = msg.sender_id == currentUser.id ? 'You' : msg.full_name;
             const messageTime = new Date(msg.created_at).toLocaleTimeString();
             
+            let deleteBtn = '';
+            if (msg.sender_id == currentUser.id) {
+                deleteBtn = `<button onclick="deleteMessage(${msg.id})" class="delete-msg-btn" title="Delete message">✕</button>`;
+            }
+            
             messageDiv.innerHTML = `
-                <div class="message-text">${msg.message_text}</div>
-                <div class="message-time">${messageTime}</div>
+                <div class="message-content">
+                    <div class="message-text">${msg.message_text}</div>
+                    <div class="message-time">${messageTime}</div>
+                </div>
+                ${deleteBtn}
             `;
             
             messagesContainer.appendChild(messageDiv);
@@ -155,4 +166,37 @@ async function sendMessage() {
 
 function viewUserProfile(userId) {
     window.location.href = `user-profile.html?id=${userId}`;
+}
+
+async function deleteMessage(messageId) {
+    if (!confirm('Delete this message?')) return;
+    
+    const result = await apiCall('delete_message.php', 'POST', {
+        message_id: messageId
+    });
+
+    if (result.success) {
+        // Reload conversation to show updated messages
+        const convName = document.querySelector('.conversation-item.active .conversation-name')?.textContent || 'User';
+        await openConversation(currentConversationWith, convName);
+    } else {
+        alert('❌ Error: ' + result.message);
+    }
+}
+
+async function clearChat() {
+    if (!confirm('Are you sure you want to delete all messages in this conversation? This action cannot be undone.')) return;
+    
+    const result = await apiCall('clear_chat.php', 'POST', {
+        other_user_id: currentConversationWith
+    });
+
+    if (result.success) {
+        alert('✅ Chat cleared successfully!');
+        // Reload conversation
+        const convName = document.querySelector('.conversation-item.active .conversation-name')?.textContent || 'User';
+        await openConversation(currentConversationWith, convName);
+    } else {
+        alert('❌ Error: ' + result.message);
+    }
 }

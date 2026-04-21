@@ -2,7 +2,13 @@
 document.addEventListener('DOMContentLoaded', function() {
     requireLogin();
     loadDashboard();
+    setupEditProfileForm();
 });
+
+function setupEditProfileForm() {
+    // Edit profile now uses a separate page
+    // No need to setup form handler here
+}
 
 async function loadDashboard() {
     const user = getUser();
@@ -57,17 +63,20 @@ function displayProfile(user) {
 function displayItems(items) {
     const container = document.getElementById('posted-items');
 
-    if (items.length === 0) {
+    // Filter out closed items - only show active and resolved
+    const filteredItems = items.filter(item => item.status !== 'closed');
+
+    if (filteredItems.length === 0) {
         container.innerHTML = '<p>You have no posted items yet. <a href="post-item.html">Post one now!</a></p>';
         return;
     }
 
     container.innerHTML = '';
-    items.forEach(item => {
+    filteredItems.forEach(item => {
         const itemRow = document.createElement('div');
         itemRow.className = 'item-row';
         
-        // Determine status display
+        // Determine status display (only active and resolved)
         let statusColor, statusEmoji;
         if (item.status === 'active') {
             statusColor = '#90EE90';
@@ -75,26 +84,17 @@ function displayItems(items) {
         } else if (item.status === 'resolved') {
             statusColor = '#FFD700';
             statusEmoji = '✅';
-        } else if (item.status === 'closed') {
-            statusColor = '#FFB6C6';
-            statusEmoji = '❌';
-        } else {
-            statusColor = '#CCCCCC';
-            statusEmoji = '❓';
         }
 
-        // Build action buttons
+        // Build action buttons (only for active and resolved, no closed option)
         let actionButtons = '';
         if (item.status === 'active') {
             actionButtons = `
                 <button class="status-btn" onclick="markItemResolved(${item.id})" style="background-color: #FFD700; color: black;">
                     ✅ Mark as Found/Resolved
                 </button>
-                <button class="status-btn" onclick="markItemClosed(${item.id})" style="background-color: #FF6B6B;">
-                    ❌ Close Item
-                </button>
             `;
-        } else {
+        } else if (item.status === 'resolved') {
             actionButtons = `
                 <button class="status-btn" onclick="markItemActive(${item.id})" style="background-color: #90EE90; color: black;">
                     🟢 Reopen Item
@@ -107,7 +107,7 @@ function displayItems(items) {
             <div class="item-row-meta">
                 <strong>${item.type.toUpperCase()}</strong> - ${item.category} 
                 <span style="background-color: ${statusColor}; color: black; padding: 5px 10px; border-radius: 4px; margin-left: 10px; font-weight: bold;">
-                    ${statusEmoji} ${item.status}
+                    ${statusEmoji} ${item.status.toUpperCase()}
                 </span>
             </div>
             <div class="item-row-meta">
@@ -115,6 +115,9 @@ function displayItems(items) {
             </div>
             <div class="item-row-actions">
                 ${actionButtons}
+                <button class="status-btn" onclick="deleteItem(${item.id})" style="background-color: #FF6B6B; color: white;">
+                    🗑️ Delete Post
+                </button>
             </div>
         `;
         container.appendChild(itemRow);
@@ -137,22 +140,6 @@ async function markItemResolved(itemId) {
     }
 }
 
-async function markItemClosed(itemId) {
-    if (!confirm('Close this item? It will no longer appear in active listings.')) return;
-    
-    const result = await apiCall('update_item_status.php', 'POST', {
-        item_id: itemId,
-        status: 'closed'
-    });
-
-    if (result.success) {
-        alert('✅ Item closed!');
-        loadDashboard();
-    } else {
-        alert('❌ Error: ' + result.message);
-    }
-}
-
 async function markItemActive(itemId) {
     if (!confirm('Reopen this item to active status?')) return;
     
@@ -163,6 +150,21 @@ async function markItemActive(itemId) {
 
     if (result.success) {
         alert('✅ Item reopened!');
+        loadDashboard();
+    } else {
+        alert('❌ Error: ' + result.message);
+    }
+}
+
+async function deleteItem(itemId) {
+    if (!confirm('Are you sure you want to delete this post? This action cannot be undone.')) return;
+    
+    const result = await apiCall('delete_item.php', 'POST', {
+        item_id: itemId
+    });
+
+    if (result.success) {
+        alert('✅ Post deleted successfully!');
         loadDashboard();
     } else {
         alert('❌ Error: ' + result.message);
@@ -247,7 +249,10 @@ async function openMessageConversation(userId, userName) {
     `;
     header.innerHTML = `
         <h3 style="margin: 0;">${userName}</h3>
-        <button onclick="document.getElementById('message-modal').remove()" style="background: none; border: none; font-size: 24px; cursor: pointer;">×</button>
+        <div>
+            <button onclick="clearDashboardChat(${userId})" style="background: #FF6B6B; color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer; margin-right: 0.5rem; font-size: 0.9rem;">🗑️ Clear</button>
+            <button onclick="document.getElementById('message-modal').remove()" style="background: none; border: none; font-size: 24px; cursor: pointer;">×</button>
+        </div>
     `;
     
     const messagesDiv = document.createElement('div');
@@ -291,6 +296,8 @@ async function openMessageConversation(userId, userName) {
                 margin-bottom: 1rem;
                 display: flex;
                 justify-content: ${msg.sender_id == currentUser.id ? 'flex-end' : 'flex-start'};
+                align-items: flex-end;
+                gap: 0.5rem;
             `;
             
             const msgBubble = document.createElement('div');
@@ -301,10 +308,37 @@ async function openMessageConversation(userId, userName) {
                 ${msg.sender_id == currentUser.id 
                     ? 'background: #4A90E2; color: white; border-radius: 15px 15px 0 15px;'
                     : 'background: #e0e0e0; color: #333; border-radius: 15px 15px 15px 0;'}
+                word-wrap: break-word;
             `;
             msgBubble.textContent = msg.message_text;
             
             msgEl.appendChild(msgBubble);
+            
+            // Add delete button only for sent messages
+            if (msg.sender_id == currentUser.id) {
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = '✕';
+                deleteBtn.style.cssText = `
+                    background: #FF6B6B;
+                    color: white;
+                    border: none;
+                    border-radius: 50%;
+                    width: 24px;
+                    height: 24px;
+                    padding: 0;
+                    cursor: pointer;
+                    font-size: 0.8rem;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: background 0.2s;
+                `;
+                deleteBtn.onmouseover = () => deleteBtn.style.background = '#FF5555';
+                deleteBtn.onmouseout = () => deleteBtn.style.background = '#FF6B6B';
+                deleteBtn.onclick = () => deleteDashboardMessage(msg.id, userId);
+                msgEl.appendChild(deleteBtn);
+            }
+            
             messagesDiv.appendChild(msgEl);
         });
         
@@ -340,3 +374,110 @@ async function sendModalMessage(userId) {
         alert('Failed to send message: ' + result.message);
     }
 }
+
+async function deleteDashboardMessage(messageId, userId) {
+    if (!confirm('Delete this message?')) return;
+    
+    const result = await apiCall('delete_message.php', 'POST', {
+        message_id: messageId
+    });
+
+    if (result.success) {
+        // Reload the conversation
+        const userName = document.querySelector('#message-modal h3').textContent;
+        document.getElementById('message-modal').remove();
+        openMessageConversation(userId, userName);
+    } else {
+        alert('❌ Error: ' + result.message);
+    }
+}
+
+async function clearDashboardChat(userId) {
+    if (!confirm('Are you sure you want to delete all messages in this conversation? This action cannot be undone.')) return;
+    
+    const result = await apiCall('clear_chat.php', 'POST', {
+        other_user_id: userId
+    });
+
+    if (result.success) {
+        alert('✅ Chat cleared successfully!');
+        // Close the modal and refresh messages list
+        document.getElementById('message-modal').remove();
+        loadMessages();  // Refresh the messages list
+    } else {
+        alert('❌ Error: ' + result.message);
+    }
+}
+
+// Edit Profile Modal Functions
+function openEditProfileModal() {
+    console.log('Button clicked - Opening edit profile modal...');
+    const modal = document.getElementById('edit-profile-modal');
+    
+    // Get stored user data
+    const user = getUser();
+    
+    // For now, just show empty fields - user can fill them
+    document.getElementById('edit-full-name').value = '';
+    document.getElementById('edit-phone').value = '';
+    document.getElementById('edit-address').value = '';
+    
+    // Show modal using classList
+    if (modal) {
+        modal.classList.add('show');
+        console.log('Modal displayed, classList:', modal.classList);
+    } else {
+        console.error('Modal element not found!');
+    }
+}
+
+function closeEditProfileModal() {
+    console.log('Closing edit profile modal...');
+    const modal = document.getElementById('edit-profile-modal');
+    if (modal) {
+        modal.classList.remove('show');
+    }
+}
+
+document.addEventListener('click', function(event) {
+    const modal = document.getElementById('edit-profile-modal');
+    if (event.target === modal) {
+        closeEditProfileModal();
+    }
+});
+
+async function saveProfileChanges() {
+    console.log('Saving profile changes...');
+    const full_name = document.getElementById('edit-full-name').value.trim();
+    const phone = document.getElementById('edit-phone').value.trim();
+    const address = document.getElementById('edit-address').value.trim();
+    
+    console.log('Profile data:', { full_name, phone, address });
+    
+    if (!full_name) {
+        alert('Full name is required');
+        return;
+    }
+    
+    try {
+        const result = await apiCall('update_profile.php', 'POST', {
+            full_name: full_name,
+            phone: phone,
+            address: address
+        });
+        
+        console.log('API response:', result);
+        
+        if (result && result.success) {
+            alert('✅ Profile updated successfully!');
+            closeEditProfileModal();
+            loadDashboard();
+        } else {
+            alert('❌ Error: ' + (result?.message || 'Unknown error'));
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('❌ Error saving profile: ' + error.message);
+    }
+}
+

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile - Lost & Found</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <h1>🔍 Lost & Found</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="browse.html">Browse Items</a></li>
+                <li id="nav-auth">
+                    <a href="dashboard.html">Dashboard</a> | <a href="#" onclick="logout()">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="auth-section">
+        <div class="container">
+            <div class="auth-card">
+                <h1>Edit Your Profile</h1>
+                <p style="text-align: center; color: #666; margin-bottom: 1.5rem;">Update your information</p>
+
+                <form id="edit-profile-form">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" autocomplete="username" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" autocomplete="email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="full-name">Full Name</label>
+                        <input type="text" id="full-name" name="full_name" autocomplete="name" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-full">Save Changes</button>
+                    <a href="dashboard.html" class="btn btn-secondary btn-full" style="text-align: center; margin-top: 0.5rem; text-decoration: none; display: block;">Cancel</a>
+                </form>
+
+                <div id="message" style="margin-top: 1rem; padding: 1rem; border-radius: 5px; display: none;"></div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Lost & Found. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            requireLogin();
+            loadProfileData();
+            setupFormHandler();
+        });
+
+        async function loadProfileData() {
+            const result = await apiCall('user_dashboard.php');
+            if (result.success) {
+                const user = result.user;
+                document.getElementById('username').value = user.username || '';
+                document.getElementById('email').value = user.email || '';
+                document.getElementById('full-name').value = user.full_name || '';
+            }
+        }
+
+        function setupFormHandler() {
+            const form = document.getElementById('edit-profile-form');
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                await saveProfile();
+            });
+        }
+
+        async function saveProfile() {
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const full_name = document.getElementById('full-name').value.trim();
+
+            if (!username || !email || !full_name) {
+                showMessage('Username, Email and Full Name are required', 'error');
+                return;
+            }
+
+            try {
+                const result = await apiCall('update_profile.php', 'POST', {
+                    username: username,
+                    email: email,
+                    full_name: full_name
+                });
+
+                if (result && result.success) {
+                    showMessage('✅ Profile updated successfully!', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1500);
+                } else {
+                    showMessage('❌ Error: ' + (result?.message || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                showMessage('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = type;
+            messageDiv.style.display = 'block';
+            
+            if (type === 'error') {
+                messageDiv.style.backgroundColor = '#F8D7DA';
+                messageDiv.style.color = '#721C24';
+                messageDiv.style.border = '1px solid #F5C6CB';
+            } else {
+                messageDiv.style.backgroundColor = '#D4EDDA';
+                messageDiv.style.color = '#155724';
+                messageDiv.style.border = '1px solid #C3E6CB';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -39,7 +39,10 @@
                 <!-- Chat Panel -->
                 <div class="chat-panel">
                     <div id="chat-header" class="chat-header">
-                        <h3>Select a conversation</h3>
+                        <div style="flex: 1;">
+                            <h3>Select a conversation</h3>
+                        </div>
+                        <button id="clear-chat-btn" onclick="clearChat()" class="btn btn-danger" style="display: none; background-color: #FF6B6B;">🗑️ Clear Chat</button>
                     </div>
 
                     <div id="messages-chat" class="messages-chat">

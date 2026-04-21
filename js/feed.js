@@ -60,9 +60,12 @@ async function loadFeed() {
     const result = await apiCall(url);
 
     if (result.success) {
-        if (result.items.length > 0) {
+        // Filter out closed items
+        const filteredItems = result.items.filter(item => item.status !== 'closed');
+        
+        if (filteredItems.length > 0) {
             container.innerHTML = '';
-            result.items.forEach(item => {
+            filteredItems.forEach(item => {
                 const feedPost = createFeedPost(item);
                 container.appendChild(feedPost);
             });
@@ -122,8 +125,8 @@ function createFeedPost(item) {
             </div>
             <div class="post-meta">
                 <span class="post-status ${item.type}">${item.type.toUpperCase()}</span>
-                <span class="post-status status-badge" style="background-color: ${item.status === 'resolved' ? '#FFD700' : item.status === 'closed' ? '#FFB6C6' : '#90EE90'}; color: black;">
-                    ${item.status === 'resolved' ? '✅ Resolved' : item.status === 'closed' ? '❌ Closed' : '🟢 Active'}
+                <span class="post-status status-badge" style="background-color: ${item.status === 'resolved' ? '#FFD700' : '#90EE90'}; color: black;">
+                    ${item.status === 'resolved' ? '✅ Resolved' : '🟢 Active'}
                 </span>
                 <span>${timeAgo}</span>
             </div>
@@ -151,6 +154,7 @@ function createFeedPost(item) {
             <button class="action-btn" onclick="viewItemDetail(${item.id})">
                 👁️ View
             </button>
+            ${isCurrentUserOwner(item.user_id) ? `<button class="action-btn" onclick="deleteItemFromFeed(event, ${item.id})" style="background-color: #FF6B6B;">🗑️ Delete</button>` : ''}
         </div>
 
         <div class="post-comments" id="comments-${item.id}">
@@ -388,5 +392,27 @@ function renderPagination(totalPages, currentPageNum) {
             window.scrollTo(0, 0);
         });
         container.appendChild(next);
+    }
+}
+
+function isCurrentUserOwner(userId) {
+    const currentUser = getUser();
+    return currentUser && currentUser.id === userId;
+}
+
+async function deleteItemFromFeed(event, itemId) {
+    event.stopPropagation();
+    
+    if (!confirm('Are you sure you want to delete this post? This action cannot be undone.')) return;
+    
+    const result = await apiCall('delete_item.php', 'POST', {
+        item_id: itemId
+    });
+
+    if (result.success) {
+        alert('✅ Post deleted successfully!');
+        loadFeed();
+    } else {
+        alert('❌ Error: ' + result.message);
     }
 }
