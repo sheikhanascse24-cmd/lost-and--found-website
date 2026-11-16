@@ -1,191 +1,50 @@
-# Lost & Found Website
+# Campus Lost N Found
 
-A full-featured web application for reporting and discovering lost and found items.
+A campus noticeboard for lost and found belongings, private ownership claims, and recorded returns.
 
-## Features
+**Live website:** https://campus-lost-n-found-gamma.vercel.app
 
-- **User Authentication**: Register and login with email
-- **Post Items**: Report lost or found items with photos and detailed descriptions
-- **Search & Filter**: Browse items by type, category, location, or keywords
-- **User Dashboard**: Manage your posted items and view your profile
-- **Messaging System**: Contact other users about items
-- **Responsive Design**: Works on desktop, tablet, and mobile devices
+## Current application
 
-## Technology Stack
+The current Next.js application is in [campus-app](campus-app). Its [full documentation](campus-app/README.md) covers configuration, verification, AI assistance and staff access.
 
-- **Backend**: PHP with MySQL database
-- **Frontend**: HTML5, CSS3, Vanilla JavaScript
-- **Server**: XAMPP (Apache + MySQL)
+- Lost and found reports with photos, category, date and location.
+- Search, possible matches and notifications that recognize expired listings.
+- Private claims, supporting evidence and conversations.
+- Finder approval, declined-claim review requests and clear validation feedback.
+- Staff review for sensitive items, serial conflicts and competing claims.
+- Collection codes, recipient details, optional private collection photos and receipt confirmation.
+- A public Resolved board with private handover records.
+- A server-side AI text-comparison aid that suggests related details; ownership decisions remain with reviewers.
 
-## Setup Instructions
+## Run locally
 
-### 1. Database Setup
+Install Node.js 24 and pnpm, then run:
 
-1. Open phpMyAdmin (usually at `http://localhost/phpmyadmin`)
-2. Create a new database named `lost_and_found`
-3. Navigate to the SQL tab and paste the contents of `database.sql`
-4. Execute the SQL queries to create all tables
-
-### 2. Configure the Project
-
-Update the database connection in `api/db_connection.php` if needed:
-- Default: `localhost`, user: `root`, password: empty
-
-Create the `uploads` folder for image storage:
-```
-mkdir uploads
+```sh
+cd campus-app
+pnpm install --frozen-lockfile --ignore-scripts
+pnpm dev
 ```
 
-### 3. Start the Server
+Open http://127.0.0.1:3100. Local data is stored under campus-app/.data and is excluded from Git.
 
-Open XAMPP Control Panel:
-1. Start **Apache**
-2. Start **MySQL**
-3. Open browser and go to: `http://localhost/lost_and_found_web/`
+## Deploy to Vercel
 
-## File Structure
+Use **campus-app** as the project root and the **Next.js** framework preset. Set DATABASE_URL, APP_SECRET and APP_URL in Vercel's environment settings. See [the environment template](campus-app/.env.example) for variable names; it contains no credentials.
 
-```
-lost_and_found_web/
-├── api/                      # PHP backend APIs
-│   ├── db_connection.php      # Database configuration
-│   ├── register.php           # User registration API
-│   ├── login.php              # User login API
-│   ├── post_item.php          # Post new item API
-│   ├── get_items.php          # Get items with filters
-│   ├── get_item.php           # Get single item details
-│   ├── messages.php           # Messaging API
-│   └── user_dashboard.php     # User dashboard data API
-├── css/
-│   └── styles.css             # All styling
-├── js/
-│   ├── auth.js               # Authentication utilities
-│   ├── login.js              # Login page logic
-│   ├── register.js           # Register page logic
-│   ├── home.js               # Home page logic
-│   ├── browse.js             # Browse items logic
-│   ├── post-item.js          # Post item form logic
-│   ├── item-detail.js        # Item detail page logic
-│   └── dashboard.js          # Dashboard logic
-├── uploads/                  # User uploaded images (created automatically)
-├── index.html                # Home page
-├── login.html                # Login page
-├── register.html             # Registration page
-├── browse.html               # Browse items page
-├── post-item.html            # Post item page
-├── item-detail.html          # Item detail page
-├── dashboard.html            # User dashboard
-├── database.sql              # Database schema
-└── README.md                 # This file
+## Verify
+
+```sh
+cd campus-app
+pnpm test
+pnpm build
 ```
 
-## Usage
+## Original prototype
 
-### For First-Time Users
+The original PHP/MySQL/XAMPP prototype remains in the repository root. Its setup guide is preserved in [LEGACY_README.md](LEGACY_README.md). Existing MySQL accounts and uploaded files are not automatically imported into the new application.
 
-1. Go to the **Register** page
-2. Create a new account with your details
-3. Login with your credentials
-4. Go to **Post Item** to report a lost/found item
-5. Browse other items and message users about matches
+## Data and access
 
-### Features
-
-#### Posting Items
-- Choose if item is Lost or Found
-- Add detailed description and photos
-- Specify category and location
-- Set the date the item was lost/found
-
-#### Searching
-- Filter by Lost/Found type
-- Filter by category (electronics, documents, jewelry, etc.)
-- Search by keywords
-- Pagination for browsing results
-
-#### Messaging
-- Contact item posters directly
-- Discuss item details
-- Arrange handover/recovery
-
-#### Dashboard
-- View all your posted items
-- Track item status (active, resolved, closed)
-- Check incoming messages
-- Manage your profile
-
-## Default Categories
-
-- Electronics (phones, laptops, tablets, etc.)
-- Documents (IDs, certificates, passports)
-- Jewelry (rings, bracelets, necklaces)
-- Keys
-- Wallet/Money
-- Phones
-- Bags/Luggage
-- Clothing
-- Other
-
-## Image Upload
-
-- Supported formats: JPG, PNG, GIF
-- Max file size: 5MB
-- Images are stored in the `uploads/` folder
-- Optional: Leave blank if no image available
-
-## Database Tables
-
-### users
-- id, username, email, password, full_name, phone, address, created_at, updated_at
-
-### items
-- id, user_id, title, description, category, type (lost/found), status, location, date_occurred, image_path, created_at, updated_at
-
-### messages
-- id, sender_id, receiver_id, item_id, message_text, read_status, created_at
-
-### responses
-- id, item_id, user_id, comment_text, created_at
-
-## Session Management
-
-- Logged-in user data is stored in browser's localStorage
-- Files that require login will redirect to login page
-- Session data includes: user id, username, email, full name
-
-## Security Notes
-
-- Passwords are hashed using bcrypt
-- SQL queries use prepared statements to prevent injection
-- Validate all user inputs on both client and server side
-- Consider adding:
-  - Email verification
-  - Rate limiting on API calls
-  - File upload size validation
-  - XSS protection headers
-  - CSRF tokens
-
-## Future Enhancements
-
-- Email notifications for messages
-- User reputation/rating system
-- Item status timeline
-- Admin panel
-- Advanced search filters
-- Map integration for locations
-- Photo gallery with multiple images
-- Two-factor authentication
-- Social media sharing
-
-## Support
-
-For issues or questions:
-1. Check the browser console for JavaScript errors
-2. Check phpMyAdmin for database connectivity
-3. Verify XAMPP services are running
-4. Check file permissions in uploads folder
-5. Verify database credentials in `api/db_connection.php`
-
-## License
-
-This project is open source and available under the MIT License.
+Registration is open for testing. Campus membership verification and designated reception accounts must be configured before institutional rollout. Private evidence and account data are not included in this repository. AI similarity and a registered account do not prove ownership.

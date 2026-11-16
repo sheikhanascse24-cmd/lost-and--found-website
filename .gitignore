@@ -1,0 +1,13 @@
+# Local application state and credentials
+.env*
+!.env.example
+.data/
+.vercel/
+node_modules/
+.next/
+test-results/
+coverage/
+*.log
+
+# User-uploaded files stay outside source control.
+uploads/
